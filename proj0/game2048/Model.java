@@ -137,7 +137,15 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        // TODO: Iterate through every tile and check if null; if all tiles are not null, return false
+        // ~10 minutes to complete
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +155,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        // TODO: Check if tile value is equal to max value, 2048.
+        // ~5 minutes to complete
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i,j) != null && b.tile(i, j).value() == MAX_PIECE ) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,7 +174,43 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        // TODO: Fill in this function
+        //  check if there is empty space on board; if yes, return true
+        // ~20 minutes to complete
+
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                Tile currentTile = b.tile(i, j);
+                int[] adjTiles = new int[4];
+
+                if (currentTile == null) {
+                    return true;
+                }
+
+                System.out.println(i + "" + j);
+                if (i != 0 && j != 0) {
+                    adjTiles[0] = b.tile(i, j - 1).value();
+                }
+                if (i != 3 && j!= 3){
+                    adjTiles[1] = b.tile(i, j + 1).value();
+                }
+                if (j != 0 && i != 0) {
+                    adjTiles[2] = b.tile(i - 1, j).value();
+                }
+                if (j != 3 && i!= 3) {
+                    adjTiles[3] = b.tile(i + 1, j).value();
+                }
+
+                for (int value : adjTiles) {
+                    if (currentTile.value() == value) {
+                        return true;
+                    }
+                }
+
+            }
+        }
+
+        // check if there are two adjacent tiles with the same value; up, down, left, and right
         return false;
     }
 
