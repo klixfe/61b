@@ -113,12 +113,45 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        tiltUp(this.board);
+        changed = true;
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    private void tiltUp(Board b) {
+        for (int i = b.size() - 1; i >= 0 ; i--) {
+            for (int j = b.size() - 2; j >= 0; j--) {
+                int maxMove = 1;
+                Tile t = b.tile(i, j);
+                if(t == null) {
+                    continue;
+                }
+                // do not move if merge = false and aboveTile not blank
+                Tile aboveTile = b.tile(i, j + maxMove);
+                while (aboveTile == null && j + maxMove < 3) {
+                    maxMove++;
+                    if (j + maxMove <= 3) {
+                        aboveTile = b.tile(i, j + maxMove);
+                    }
+                }
+
+                if(aboveTile != null && aboveTile.value() != t.value()) {
+                    maxMove--;
+                }
+
+                boolean mergeBool = b.move(i, j + maxMove, t);
+                if (mergeBool) {
+                    this.score += t.value() * 2;
+                }
+            }
+        }
+
+        // increment score when board.move returns true
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -188,16 +221,16 @@ public class Model extends Observable {
                 }
 
                 System.out.println(i + "" + j);
-                if (i != 0 && j != 0) {
+                if (i != 0 && j != 0 && b.tile(i, j - 1) != null) {
                     adjTiles[0] = b.tile(i, j - 1).value();
                 }
-                if (i != 3 && j!= 3){
+                if (i != 3 && j!= 3 && b.tile(i, j + 1) != null){
                     adjTiles[1] = b.tile(i, j + 1).value();
                 }
-                if (j != 0 && i != 0) {
+                if (j != 0 && i != 0 && b.tile(i - 1, j) != null) {
                     adjTiles[2] = b.tile(i - 1, j).value();
                 }
-                if (j != 3 && i!= 3) {
+                if (j != 3 && i!= 3 && b.tile(i + 1, j) != null) {
                     adjTiles[3] = b.tile(i + 1, j).value();
                 }
 
