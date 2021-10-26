@@ -113,7 +113,9 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        this.board.setViewingPerspective(side);
         tiltUp(this.board);
+        this.board.setViewingPerspective(Side.NORTH);
         changed = true;
 
         checkGameOver();
@@ -125,6 +127,7 @@ public class Model extends Observable {
 
     private void tiltUp(Board b) {
         for (int i = b.size() - 1; i >= 0 ; i--) {
+            boolean alreadyMerged = false;
             for (int j = b.size() - 2; j >= 0; j--) {
                 int maxMove = 1;
                 Tile t = b.tile(i, j);
@@ -140,12 +143,26 @@ public class Model extends Observable {
                     }
                 }
 
-                if(aboveTile != null && aboveTile.value() != t.value()) {
+                // do not merge if tile values are not equal
+                if (aboveTile != null && aboveTile.value() != t.value()) {
                     maxMove--;
+                }
+
+                // reset alreadyMerged boolean if tile is trying to make the maximum move
+                if (maxMove == 2 && alreadyMerged) {
+                    alreadyMerged = false;
+                }
+
+                // do not merge if tile has already been merged
+                if (alreadyMerged) {
+                    if (b.tile(i, j + maxMove) != null &&b.tile(i, j + maxMove).value() == t.value()) {
+                        maxMove--;
+                    }
                 }
 
                 boolean mergeBool = b.move(i, j + maxMove, t);
                 if (mergeBool) {
+                    alreadyMerged = true;
                     this.score += t.value() * 2;
                 }
             }
